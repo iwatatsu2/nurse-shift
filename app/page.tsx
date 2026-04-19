@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
+import Link from 'next/link'
 import { CalendarHeader } from '@/components/calendar-header'
 import { CalendarGrid } from '@/components/calendar-grid'
 import { ShiftSummary } from '@/components/shift-summary'
@@ -159,11 +160,16 @@ export default function NurseShiftApp() {
           </button>
         </div>
 
-        <div className="px-4 pb-6 pt-1">
+        <div className="px-4 pb-6 pt-1 space-y-2">
           <p className="text-xs text-center text-gray-400">
             日付をタップしてシフトを入力
             <br />
             <span className="text-gray-300">日 → 準 → 深 → 休 → 有 → クリア</span>
+          </p>
+          <p className="text-center">
+            <Link href="/terms" className="text-[10px] text-gray-300 hover:text-gray-400">
+              利用規約・免責事項
+            </Link>
           </p>
         </div>
       </div>
