@@ -1,65 +1,193 @@
-import Image from "next/image";
+'use client'
 
-export default function Home() {
+import { useCallback, useEffect, useState } from 'react'
+import { CalendarHeader } from '@/components/calendar-header'
+import { CalendarGrid } from '@/components/calendar-grid'
+import { ShiftSummary } from '@/components/shift-summary'
+import { PatternInput } from '@/components/pattern-input'
+import { WeatherBar } from '@/components/weather-bar'
+import { GroupPanel } from '@/components/group-panel'
+import { useShiftStore } from '@/hooks/use-shift-store'
+import { useGroup } from '@/hooks/use-group'
+import { getNextShift } from '@/lib/shift-types'
+import type { ShiftType } from '@/lib/shift-types'
+import { Layers, Users, PartyPopper } from 'lucide-react'
+
+export default function NurseShiftApp() {
+  const today = new Date()
+  const [currentYear, setCurrentYear] = useState(today.getFullYear())
+  const [currentMonth, setCurrentMonth] = useState(today.getMonth())
+  const [showPattern, setShowPattern] = useState(false)
+  const [showGroup, setShowGroup] = useState(false)
+
+  const { shifts, getShift, setShift, bulkSetShifts, getShiftCounts, isLoaded } = useShiftStore()
+  const {
+    group,
+    members,
+    myMemberId,
+    createGroup,
+    joinGroup,
+    syncShifts,
+    leaveGroup,
+    getCommonOffDays,
+  } = useGroup()
+
+  // Sync shifts to group when they change
+  useEffect(() => {
+    if (myMemberId && isLoaded) {
+      syncShifts(shifts)
+    }
+  }, [shifts, myMemberId, isLoaded, syncShifts])
+
+  const handlePrevMonth = useCallback(() => {
+    setCurrentMonth((prev) => {
+      if (prev === 0) {
+        setCurrentYear((y) => y - 1)
+        return 11
+      }
+      return prev - 1
+    })
+  }, [])
+
+  const handleNextMonth = useCallback(() => {
+    setCurrentMonth((prev) => {
+      if (prev === 11) {
+        setCurrentYear((y) => y + 1)
+        return 0
+      }
+      return prev + 1
+    })
+  }, [])
+
+  const handleToday = useCallback(() => {
+    const now = new Date()
+    setCurrentYear(now.getFullYear())
+    setCurrentMonth(now.getMonth())
+  }, [])
+
+  const handleDateClick = useCallback(
+    (dateKey: string) => {
+      const currentShift = getShift(dateKey)
+      const nextShift = getNextShift(currentShift)
+      setShift(dateKey, nextShift)
+    },
+    [getShift, setShift]
+  )
+
+  const handlePatternApply = useCallback(
+    (newShifts: Record<string, ShiftType>) => {
+      bulkSetShifts(newShifts)
+    },
+    [bulkSetShifts]
+  )
+
+  const shiftCounts = getShiftCounts(currentYear, currentMonth)
+  const commonOffDays = group ? getCommonOffDays(currentYear, currentMonth) : []
+
+  if (!isLoaded) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-pulse text-gray-300">読み込み中...</div>
+      </div>
+    )
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <main className="min-h-screen bg-gray-50">
+      <div className="max-w-md mx-auto bg-white min-h-screen shadow-2xl shadow-gray-200/50">
+        <CalendarHeader
+          year={currentYear}
+          month={currentMonth}
+          onPrevMonth={handlePrevMonth}
+          onNextMonth={handleNextMonth}
+          onToday={handleToday}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+
+        {/* Group indicator */}
+        {group && (
+          <div className="px-4 py-2 bg-slate-50 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="flex -space-x-1.5">
+                {members.slice(0, 4).map((m) => (
+                  <div
+                    key={m.id}
+                    className="w-6 h-6 rounded-full border-2 border-white flex items-center justify-center text-[9px] text-white font-bold"
+                    style={{ backgroundColor: m.color }}
+                  >
+                    {m.name.charAt(0)}
+                  </div>
+                ))}
+              </div>
+              <span className="text-xs text-gray-500">{group.name}</span>
+            </div>
+            {commonOffDays.length > 0 && (
+              <div className="flex items-center gap-1 text-xs text-pink-500 font-medium">
+                <PartyPopper className="w-3.5 h-3.5" />
+                共通休み {commonOffDays.length}日
+              </div>
+            )}
+          </div>
+        )}
+
+        <CalendarGrid
+          year={currentYear}
+          month={currentMonth}
+          shifts={shifts}
+          onDateClick={handleDateClick}
+          commonOffDays={commonOffDays}
+        />
+
+        <ShiftSummary counts={shiftCounts} />
+
+        <WeatherBar />
+
+        {/* Actions */}
+        <div className="px-5 py-3 flex gap-2">
+          <button
+            onClick={() => setShowPattern(true)}
+            className="flex-1 py-2.5 rounded-2xl text-xs font-medium flex items-center justify-center gap-2 bg-gray-50 text-gray-500 hover:bg-gray-100 transition-colors active:scale-[0.98]"
+          >
+            <Layers className="w-4 h-4" />
+            パターン入力
+          </button>
+          <button
+            onClick={() => setShowGroup(true)}
+            className="flex-1 py-2.5 rounded-2xl text-xs font-medium flex items-center justify-center gap-2 bg-gray-50 text-gray-500 hover:bg-gray-100 transition-colors active:scale-[0.98]"
+          >
+            <Users className="w-4 h-4" />
+            {group ? 'グループ' : 'みんなと共有'}
+          </button>
+        </div>
+
+        <div className="px-4 pb-6 pt-1">
+          <p className="text-xs text-center text-gray-400">
+            日付をタップしてシフトを入力
+            <br />
+            <span className="text-gray-300">日 → 準 → 深 → 休 → 有 → クリア</span>
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+      </div>
+
+      {showPattern && (
+        <PatternInput
+          year={currentYear}
+          month={currentMonth}
+          onApply={handlePatternApply}
+          onClose={() => setShowPattern(false)}
+        />
+      )}
+
+      {showGroup && (
+        <GroupPanel
+          group={group}
+          members={members}
+          myMemberId={myMemberId}
+          onCreateGroup={createGroup}
+          onJoinGroup={joinGroup}
+          onLeaveGroup={leaveGroup}
+          onClose={() => setShowGroup(false)}
+        />
+      )}
+    </main>
+  )
 }
