@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter, Zen_Kaku_Gothic_New } from 'next/font/google'
 import './globals.css'
+import InstallBanner from './components/install-banner'
 
 const inter = Inter({
   subsets: ["latin"],
@@ -33,8 +34,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja" className="bg-gray-50">
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+      </head>
       <body className={`${inter.variable} ${zenKaku.variable} font-[var(--font-zen-kaku)] antialiased`}>
         {children}
+        <InstallBanner />
       </body>
     </html>
   )
