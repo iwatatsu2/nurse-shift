@@ -1,13 +1,15 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { CalendarHeader } from '@/components/calendar-header'
 import { CalendarGrid } from '@/components/calendar-grid'
 import { ShiftSummary } from '@/components/shift-summary'
 import { PatternInput } from '@/components/pattern-input'
 import { WeatherBar } from '@/components/weather-bar'
+import { FatigueBar } from '@/components/fatigue-bar'
 import { GroupPanel } from '@/components/group-panel'
+import { DateDetailModal } from '@/components/date-detail-modal'
 import { useShiftStore } from '@/hooks/use-shift-store'
 import { useGroup } from '@/hooks/use-group'
 import { getNextShift } from '@/lib/shift-types'
@@ -20,8 +22,9 @@ export default function NurseShiftApp() {
   const [currentMonth, setCurrentMonth] = useState(today.getMonth())
   const [showPattern, setShowPattern] = useState(false)
   const [showGroup, setShowGroup] = useState(false)
+  const [selectedDate, setSelectedDate] = useState<string | null>(null)
 
-  const { shifts, getShift, setShift, bulkSetShifts, getShiftCounts, isLoaded } = useShiftStore()
+  const { shifts, memos, getShift, setShift, bulkSetShifts, getMemo, setMemo, hasMemo, getShiftCounts, isLoaded } = useShiftStore()
   const {
     group,
     members,
@@ -75,6 +78,10 @@ export default function NurseShiftApp() {
     [getShift, setShift]
   )
 
+  const handleDateLongPress = useCallback((dateKey: string) => {
+    setSelectedDate(dateKey)
+  }, [])
+
   const handlePatternApply = useCallback(
     (newShifts: Record<string, ShiftType>) => {
       bulkSetShifts(newShifts)
@@ -84,6 +91,15 @@ export default function NurseShiftApp() {
 
   const shiftCounts = getShiftCounts(currentYear, currentMonth)
   const commonOffDays = group ? getCommonOffDays(currentYear, currentMonth) : []
+
+  // Build memo flags for current view
+  const memoFlags = useMemo(() => {
+    const flags: Record<string, boolean> = {}
+    Object.keys(memos).forEach((key) => {
+      if (hasMemo(key)) flags[key] = true
+    })
+    return flags
+  }, [memos, hasMemo])
 
   if (!isLoaded) {
     return (
@@ -134,11 +150,15 @@ export default function NurseShiftApp() {
           year={currentYear}
           month={currentMonth}
           shifts={shifts}
+          memoFlags={memoFlags}
           onDateClick={handleDateClick}
+          onDateLongPress={handleDateLongPress}
           commonOffDays={commonOffDays}
         />
 
         <ShiftSummary counts={shiftCounts} />
+
+        <FatigueBar shifts={shifts} />
 
         <WeatherBar />
 
@@ -162,7 +182,7 @@ export default function NurseShiftApp() {
 
         <div className="px-4 pb-6 pt-1 space-y-2">
           <p className="text-xs text-center text-gray-400">
-            日付をタップしてシフトを入力
+            タップ → シフト切替　／　長押し → メモ編集
             <br />
             <span className="text-gray-300">日 → 準 → 深 → 休 → 有 → クリア</span>
           </p>
@@ -192,6 +212,17 @@ export default function NurseShiftApp() {
           onJoinGroup={joinGroup}
           onLeaveGroup={leaveGroup}
           onClose={() => setShowGroup(false)}
+        />
+      )}
+
+      {selectedDate && (
+        <DateDetailModal
+          dateKey={selectedDate}
+          shift={getShift(selectedDate)}
+          memo={getMemo(selectedDate)}
+          onShiftChange={(shift) => setShift(selectedDate, shift)}
+          onMemoChange={(memo) => setMemo(selectedDate, memo)}
+          onClose={() => setSelectedDate(null)}
         />
       )}
     </main>

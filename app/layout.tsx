@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Inter, Zen_Kaku_Gothic_New } from 'next/font/google'
 import './globals.css'
 import InstallBanner from './components/install-banner'
+import { Analytics } from '@vercel/analytics/react'
 
 const inter = Inter({
   subsets: ["latin"],
@@ -42,6 +43,7 @@ export default function RootLayout({
       <body className={`${inter.variable} ${zenKaku.variable} font-[var(--font-zen-kaku)] antialiased`}>
         {children}
         <InstallBanner />
+        <Analytics />
       </body>
     </html>
   )

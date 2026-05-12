@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, useRef, useCallback } from 'react'
 import { cn } from '@/lib/utils'
 import type { ShiftType } from '@/lib/shift-types'
 import { SHIFT_CONFIGS } from '@/lib/shift-types'
@@ -10,7 +10,9 @@ interface CalendarGridProps {
   year: number
   month: number
   shifts: Record<string, ShiftType>
+  memoFlags: Record<string, boolean>
   onDateClick: (dateKey: string) => void
+  onDateLongPress: (dateKey: string) => void
   commonOffDays?: string[]
 }
 
@@ -48,8 +50,35 @@ function isToday(date: Date): boolean {
   )
 }
 
-export function CalendarGrid({ year, month, shifts, onDateClick, commonOffDays = [] }: CalendarGridProps) {
+export function CalendarGrid({ year, month, shifts, memoFlags, onDateClick, onDateLongPress, commonOffDays = [] }: CalendarGridProps) {
   const days = useMemo(() => getCalendarDays(year, month), [year, month])
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const longPressTriggered = useRef(false)
+
+  const handlePointerDown = useCallback((dateKey: string) => {
+    longPressTriggered.current = false
+    longPressTimer.current = setTimeout(() => {
+      longPressTriggered.current = true
+      onDateLongPress(dateKey)
+    }, 500)
+  }, [onDateLongPress])
+
+  const handlePointerUp = useCallback((dateKey: string) => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current)
+      longPressTimer.current = null
+    }
+    if (!longPressTriggered.current) {
+      onDateClick(dateKey)
+    }
+  }, [onDateClick])
+
+  const handlePointerCancel = useCallback(() => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current)
+      longPressTimer.current = null
+    }
+  }, [])
 
   return (
     <div className="px-4 py-3">
@@ -81,18 +110,29 @@ export function CalendarGrid({ year, month, shifts, onDateClick, commonOffDays =
           const dayOfWeek = date.getDay()
           const today = isToday(date)
           const isCommonOff = commonOffDays.includes(dateKey)
+          const hasMemo = !!memoFlags[dateKey]
 
           return (
             <button
               key={dateKey}
-              onClick={() => onDateClick(dateKey)}
+              onPointerDown={() => handlePointerDown(dateKey)}
+              onPointerUp={() => handlePointerUp(dateKey)}
+              onPointerLeave={handlePointerCancel}
+              onContextMenu={(e) => e.preventDefault()}
               className={cn(
                 'aspect-square flex flex-col items-center justify-center rounded-2xl transition-all active:scale-90',
-                'hover:bg-gray-50 relative',
+                'hover:bg-gray-50 relative touch-none',
                 today && 'bg-slate-800 hover:bg-slate-700',
                 isCommonOff && !today && 'bg-pink-50 ring-2 ring-pink-300 ring-offset-1'
               )}
             >
+              {hasMemo && (
+                <div className={cn(
+                  'absolute top-1 right-1.5 w-1.5 h-1.5 rounded-full',
+                  today ? 'bg-sky-300' : 'bg-sky-400'
+                )} />
+              )}
+
               <span
                 className={cn(
                   'text-[13px] font-medium mb-0.5 font-[var(--font-inter)]',

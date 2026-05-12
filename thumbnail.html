@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap');
+
+  body {
+    width: 1280px;
+    height: 720px;
+    overflow: hidden;
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+    background: linear-gradient(135deg, #1e293b 0%, #334155 50%, #1e293b 100%);
+    display: flex;
+    color: white;
+  }
+
+  .left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 60px 50px 60px 70px;
+    gap: 24px;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.1);
+    padding: 6px 16px;
+    border-radius: 999px;
+    font-size: 13px;
+    color: #f9a8d4;
+    width: fit-content;
+    letter-spacing: 2px;
+  }
+
+  .cross {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 20px;
+    height: 20px;
+  }
+  .cross-h {
+    position: absolute;
+    width: 16px;
+    height: 6px;
+    background: #f9a8d4;
+    border-radius: 2px;
+  }
+  .cross-v {
+    position: absolute;
+    width: 6px;
+    height: 16px;
+    background: #f9a8d4;
+    border-radius: 2px;
+  }
+
+  .app-name {
+    font-family: 'Inter', sans-serif;
+    font-size: 64px;
+    font-weight: 900;
+    letter-spacing: 4px;
+    line-height: 1.1;
+  }
+  .app-name span {
+    color: #f9a8d4;
+  }
+
+  .catchcopy {
+    font-size: 28px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.85);
+    line-height: 1.5;
+  }
+
+  .features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .feature {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.7);
+  }
+
+  .right {
+    width: 440px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Phone mockup */
+  .phone {
+    width: 260px;
+    height: 520px;
+    background: white;
+    border-radius: 36px;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.4), 0 0 0 8px #475569;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transform: rotate(3deg);
+  }
+
+  .phone-header {
+    background: linear-gradient(135deg, #1e293b, #334155);
+    padding: 16px 14px 12px;
+    text-align: center;
+  }
+  .phone-header-top {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+  .phone-header-emoji { font-size: 14px; }
+  .phone-header-title {
+    font-size: 11px;
+    color: rgba(255,255,255,0.9);
+    letter-spacing: 3px;
+    font-weight: 700;
+  }
+  .phone-month {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: white;
+  }
+  .phone-month span { color: #f9a8d4; }
+
+  .phone-body {
+    flex: 1;
+    padding: 8px;
+    background: white;
+  }
+
+  .weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-size: 8px;
+    font-family: 'Inter', sans-serif;
+    color: #cbd5e1;
+    margin-bottom: 4px;
+  }
+  .weekdays .sun { color: #fda4af; }
+  .weekdays .sat { color: #7dd3fc; }
+
+  .cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    font-family: 'Inter', sans-serif;
+  }
+  .cal-cell {
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 9px;
+    color: #64748b;
+    gap: 1px;
+  }
+  .cal-cell.today {
+    background: #1e293b;
+    color: white;
+  }
+  .cal-cell.common-off {
+    background: #fce7f3;
+    outline: 2px solid #f9a8d4;
+    outline-offset: 1px;
+  }
+
+  .shift-badge {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 7px;
+    font-weight: 900;
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+  }
+  .shift-day { background: #fef9c3; color: #a16207; }
+  .shift-eve { background: #ffedd5; color: #c2410c; }
+  .shift-night { background: #ede9fe; color: #7c3aed; }
+  .shift-off { background: #f1f5f9; color: #94a3b8; }
+  .shift-paid { background: #d1fae5; color: #059669; }
+
+  .phone-summary {
+    border-top: 1px solid #f1f5f9;
+    padding: 8px;
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .summary-pill {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 7px;
+    color: #94a3b8;
+  }
+  .summary-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 5px;
+    font-weight: 900;
+  }
+
+  /* Decorative */
+  .glow {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(249,168,212,0.15) 0%, transparent 70%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+
+<div class="left">
+  <div class="badge">
+    <div class="cross"><div class="cross-h"></div><div class="cross-v"></div></div>
+    NURSE SHIFT APP
+  </div>
+
+  <div class="app-name">Nurse<br><span>Shift</span></div>
+
+  <div class="catchcopy">みんなの休み、<br>ひと目でわかる。</div>
+
+  <div class="features">
+    <div class="feature">ワンタップ入力</div>
+    <div class="feature">パターン一括設定</div>
+    <div class="feature">グループ共有</div>
+    <div class="feature">共通休みハイライト</div>
+    <div class="feature">天気予報</div>
+  </div>
+</div>
+
+<div class="right">
+  <div class="glow"></div>
+  <div class="phone">
+    <div class="phone-header">
+      <div class="phone-header-top">
+        <span class="phone-header-emoji">🩺</span>
+        <span class="phone-header-title">NURSE SHIFT</span>
+      </div>
+      <div class="phone-month">2026.<span>04</span></div>
+    </div>
+    <div class="phone-body">
+      <div class="weekdays">
+        <div class="sun">S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div class="sat">S</div>
+      </div>
+      <div class="cal-grid">
+        <!-- Row 1: Apr starts on Wed -->
+        <div class="cal-cell"></div>
+        <div class="cal-cell"></div>
+        <div class="cal-cell"></div>
+        <div class="cal-cell">1<div class="shift-badge shift-day">日</div></div>
+        <div class="cal-cell">2<div class="shift-badge shift-day">日</div></div>
+        <div class="cal-cell">3<div class="shift-badge shift-eve">準</div></div>
+        <div class="cal-cell">4<div class="shift-badge shift-night">深</div></div>
+        <!-- Row 2 -->
+        <div class="cal-cell">5<div class="shift-badge shift-off">休</div></div>
+        <div class="cal-cell">6<div class="shift-badge shift-off">休</div></div>
+        <div class="cal-cell">7<div class="shift-badge shift-day">日</div></div>
+        <div class="cal-cell">8<div class="shift-badge shift-day">日</div></div>
+        <div class="cal-cell">9<div class="shift-badge shift-eve">準</div></div>
+        <div class="cal-cell">10<div class="shift-badge shift-night">深</div></div>
+        <div class="cal-cell common-off">11<div class="shift-badge shift-off">休</div></div>
+        <!-- Row 3 -->
+        <div class="cal-cell common-off">12<div class="shift-badge shift-off">休</div></div>
+        <div class="cal-cell">13<div class="shift-badge shift-day">日</div></div>
+        <div class="cal-cell">14<div class="shift-badge shift-day">日</div></div>
+        <div class="cal-cell">15<div class="shift-badge shift-eve">準</div></div>
+        <div class="cal-cell">16<div class="shift-badge shift-night">深</div></div>
+        <div class="cal-cell">17<div class="shift-badge shift-off">休</div></div>
+        <div class="cal-cell">18<div class="shift-badge shift-off">休</div></div>
+        <!-- Row 4 -->
+        <div class="cal-cell today">19<div class="shift-badge shift-day">日</div></div>
+        <div class="cal-cell">20<div class="shift-badge shift-day">日</div></div>
+        <div class="cal-cell">21<div class="shift-badge shift-eve">準</div></div>
+        <div class="cal-cell">22<div class="shift-badge shift-night">深</div></div>
+        <div class="cal-cell common-off">23<div class="shift-badge shift-paid">有</div></div>
+        <div class="cal-cell common-off">24<div class="shift-badge shift-off">休</div></div>
+        <div class="cal-cell">25<div class="shift-badge shift-day">日</div></div>
+        <!-- Row 5 -->
+        <div class="cal-cell">26<div class="shift-badge shift-day">日</div></div>
+        <div class="cal-cell">27<div class="shift-badge shift-eve">準</div></div>
+        <div class="cal-cell">28<div class="shift-badge shift-night">深</div></div>
+        <div class="cal-cell">29<div class="shift-badge shift-off">休</div></div>
+        <div class="cal-cell">30<div class="shift-badge shift-off">休</div></div>
+        <div class="cal-cell"></div>
+        <div class="cal-cell"></div>
+      </div>
+    </div>
+    <div class="phone-summary">
+      <div class="summary-pill"><div class="summary-dot shift-day">日</div>日勤 10</div>
+      <div class="summary-pill"><div class="summary-dot shift-eve">準</div>準夜 5</div>
+      <div class="summary-pill"><div class="summary-dot shift-night">深</div>深夜 5</div>
+      <div class="summary-pill"><div class="summary-dot shift-off">休</div>休み 9</div>
+      <div class="summary-pill"><div class="summary-dot shift-paid">有</div>有給 1</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
