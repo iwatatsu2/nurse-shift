@@ -87,7 +87,7 @@ export function CalendarGrid({ year, month, shifts, memoFlags, onDateClick, onDa
           <div
             key={`${day}-${index}`}
             className={cn(
-              'text-center text-[11px] font-medium py-2 tracking-wider',
+              'text-center text-sm font-bold py-2 tracking-wider',
               index === 0 && 'text-rose-300',
               index === 6 && 'text-sky-300',
               index > 0 && index < 6 && 'text-gray-300'
@@ -98,10 +98,10 @@ export function CalendarGrid({ year, month, shifts, memoFlags, onDateClick, onDa
         ))}
       </div>
 
-      <div className="grid grid-cols-7 gap-0.5">
+      <div className="grid grid-cols-7 gap-1">
         {days.map((date, index) => {
           if (!date) {
-            return <div key={`empty-${index}`} className="aspect-square" />
+            return <div key={`empty-${index}`} className="py-3" />
           }
 
           const dateKey = formatDateKey(date)
@@ -120,7 +120,7 @@ export function CalendarGrid({ year, month, shifts, memoFlags, onDateClick, onDa
               onPointerLeave={handlePointerCancel}
               onContextMenu={(e) => e.preventDefault()}
               className={cn(
-                'aspect-square flex flex-col items-center justify-center rounded-2xl transition-all active:scale-90',
+                'py-1.5 flex flex-col items-center justify-center rounded-2xl transition-all active:scale-90',
                 'hover:bg-gray-50 relative touch-none',
                 today && 'bg-slate-800 hover:bg-slate-700',
                 isCommonOff && !today && 'bg-pink-50 ring-2 ring-pink-300 ring-offset-1'
@@ -135,11 +135,11 @@ export function CalendarGrid({ year, month, shifts, memoFlags, onDateClick, onDa
 
               <span
                 className={cn(
-                  'text-[13px] font-medium mb-0.5 font-[var(--font-inter)]',
+                  'text-lg font-bold mb-0.5 font-[var(--font-inter)]',
                   today && 'text-white',
-                  !today && dayOfWeek === 0 && 'text-rose-300',
-                  !today && dayOfWeek === 6 && 'text-sky-300',
-                  !today && dayOfWeek > 0 && dayOfWeek < 6 && 'text-gray-500',
+                  !today && dayOfWeek === 0 && 'text-rose-400',
+                  !today && dayOfWeek === 6 && 'text-sky-400',
+                  !today && dayOfWeek > 0 && dayOfWeek < 6 && 'text-gray-700',
                 )}
               >
                 {date.getDate()}
@@ -148,8 +148,8 @@ export function CalendarGrid({ year, month, shifts, memoFlags, onDateClick, onDa
               {shiftConfig && (
                 <div
                   className={cn(
-                    'w-6 h-6 rounded-full flex items-center justify-center',
-                    'text-[10px] font-bold',
+                    'w-7 h-7 rounded-full flex items-center justify-center',
+                    'text-xs font-bold',
                     today ? 'bg-white/20 text-white' : `${shiftConfig.bgColor} ${shiftConfig.textColor}`
                   )}
                 >
@@ -157,7 +157,7 @@ export function CalendarGrid({ year, month, shifts, memoFlags, onDateClick, onDa
                 </div>
               )}
 
-              {!shiftConfig && <div className="w-6 h-6" />}
+              {!shiftConfig && <div className="w-7 h-5" />}
             </button>
           )
         })}
