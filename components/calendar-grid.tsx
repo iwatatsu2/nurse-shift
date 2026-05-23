@@ -123,7 +123,9 @@ export function CalendarGrid({ year, month, shifts, memoFlags, onDateClick, onDa
                 'py-1.5 flex flex-col items-center justify-center rounded-2xl transition-all active:scale-90',
                 'hover:bg-gray-50 relative touch-none',
                 today && 'bg-slate-800 hover:bg-slate-700',
-                isCommonOff && !today && 'bg-pink-50 ring-2 ring-pink-300 ring-offset-1'
+                !today && shiftConfig && shiftConfig.cellBgColor,
+                isCommonOff && !today && !shiftConfig && 'bg-pink-50 ring-2 ring-pink-300 ring-offset-1',
+                isCommonOff && !today && shiftConfig && 'ring-2 ring-pink-300 ring-offset-1'
               )}
             >
               {hasMemo && (
