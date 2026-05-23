@@ -22,9 +22,9 @@ export const SHIFT_CONFIGS: Record<Exclude<ShiftType, null>, ShiftConfig> = {
     type: 'evening',
     label: '準夜勤',
     shortLabel: '準',
-    bgColor: 'bg-orange-50',
-    cellBgColor: 'bg-orange-100',
-    textColor: 'text-orange-400',
+    bgColor: 'bg-rose-50',
+    cellBgColor: 'bg-rose-100',
+    textColor: 'text-rose-500',
   },
   night: {
     type: 'night',
