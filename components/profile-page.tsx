@@ -1,11 +1,11 @@
 'use client'
 
-import { ArrowLeft, Globe, Hospital, Instagram, FileText, BarChart3 } from 'lucide-react'
+import { ArrowLeft, Globe, Hospital, Camera, FileText, BarChart3 } from 'lucide-react'
 
 const links = [
   { icon: <Globe className="w-4 h-4" />, label: '公式サイト', url: 'https://driwatatsu.readdy.co' },
   { icon: <Hospital className="w-4 h-4" />, label: '医療アプリまとめ', url: 'https://medapp-market.vercel.app' },
-  { icon: <Instagram className="w-4 h-4" />, label: 'Instagram', url: 'https://www.instagram.com/dr.iwatatsu/' },
+  { icon: <Camera className="w-4 h-4" />, label: 'Instagram', url: 'https://www.instagram.com/dr.iwatatsu/' },
   { icon: <span className="text-sm font-bold">𝕏</span>, label: 'X (Twitter)', url: 'https://x.com/KenKyu1019799' },
   { icon: <FileText className="w-4 h-4" />, label: 'note', url: 'https://note.com/dr_iwatatsu' },
   { icon: <BarChart3 className="w-4 h-4" />, label: 'antaaスライド', url: 'https://slide.antaa.jp/profile/mtzDnleJ6DYJ' },
