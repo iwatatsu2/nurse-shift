@@ -10,6 +10,7 @@ import { WeatherBar } from '@/components/weather-bar'
 import { FatigueBar } from '@/components/fatigue-bar'
 import { GroupPanel } from '@/components/group-panel'
 import { DateDetailModal } from '@/components/date-detail-modal'
+import { ProfilePage } from '@/components/profile-page'
 import { useShiftStore } from '@/hooks/use-shift-store'
 import { useGroup } from '@/hooks/use-group'
 import { getNextShift } from '@/lib/shift-types'
@@ -23,6 +24,7 @@ export default function NurseShiftApp() {
   const [showPattern, setShowPattern] = useState(false)
   const [showGroup, setShowGroup] = useState(false)
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
+  const [showProfile, setShowProfile] = useState(false)
 
   const { shifts, memos, getShift, setShift, bulkSetShifts, getMemo, setMemo, hasMemo, getShiftCounts, isLoaded } = useShiftStore()
   const {
@@ -118,8 +120,12 @@ export default function NurseShiftApp() {
           onPrevMonth={handlePrevMonth}
           onNextMonth={handleNextMonth}
           onToday={handleToday}
+          onProfile={() => setShowProfile(true)}
         />
 
+        {showProfile ? (
+          <ProfilePage onBack={() => setShowProfile(false)} />
+        ) : (<>
         {/* Group indicator */}
         {group && (
           <div className="px-4 py-2 bg-slate-50 flex items-center justify-between">
@@ -192,6 +198,7 @@ export default function NurseShiftApp() {
             </Link>
           </p>
         </div>
+        </>)}
       </div>
 
       {showPattern && (

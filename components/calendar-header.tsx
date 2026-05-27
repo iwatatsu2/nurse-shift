@@ -8,6 +8,7 @@ interface CalendarHeaderProps {
   onPrevMonth: () => void
   onNextMonth: () => void
   onToday: () => void
+  onProfile?: () => void
 }
 
 export function CalendarHeader({
@@ -16,16 +17,35 @@ export function CalendarHeader({
   onPrevMonth,
   onNextMonth,
   onToday,
+  onProfile,
 }: CalendarHeaderProps) {
   return (
     <div className="bg-gradient-to-br from-slate-800 via-slate-900 to-slate-800 px-5 py-6">
-      <div className="flex items-center justify-center gap-2.5 mb-4">
-        <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
-          <span className="text-lg">🩺</span>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
+            <span className="text-lg">🩺</span>
+          </div>
+          <h1 className="text-lg font-medium text-white/90 tracking-widest uppercase">
+            Nurse Shift
+          </h1>
         </div>
-        <h1 className="text-lg font-medium text-white/90 tracking-widest uppercase">
-          Nurse Shift
-        </h1>
+        {onProfile && (
+          <button
+            onClick={onProfile}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+          >
+            <div className="w-5 h-5 rounded-full overflow-hidden">
+              <img
+                src="/dr-iwatatsu.png"
+                alt=""
+                className="w-full object-cover object-top"
+                style={{ height: '200%' }}
+              />
+            </div>
+            <span className="text-xs text-gray-300">Dr. いわたつ</span>
+          </button>
+        )}
       </div>
 
       <div className="flex items-center justify-between">

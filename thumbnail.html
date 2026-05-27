@@ -38,27 +38,11 @@
     letter-spacing: 2px;
   }
 
-  .cross {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    width: 20px;
-    height: 20px;
-  }
-  .cross-h {
-    position: absolute;
-    width: 16px;
-    height: 6px;
-    background: #f9a8d4;
-    border-radius: 2px;
-  }
-  .cross-v {
-    position: absolute;
-    width: 6px;
-    height: 16px;
-    background: #f9a8d4;
-    border-radius: 2px;
+  .badge-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    object-fit: cover;
   }
 
   .app-name {
@@ -248,7 +232,7 @@
 
 <div class="left">
   <div class="badge">
-    <div class="cross"><div class="cross-h"></div><div class="cross-v"></div></div>
+    <img src="nurse-shift-icon.png" class="badge-icon" alt="icon">
     NURSE SHIFT APP
   </div>
 
@@ -270,7 +254,7 @@
   <div class="phone">
     <div class="phone-header">
       <div class="phone-header-top">
-        <span class="phone-header-emoji">🩺</span>
+        <img src="nurse-shift-icon.png" style="width:18px;height:18px;border-radius:4px;" alt="icon">
         <span class="phone-header-title">NURSE SHIFT</span>
       </div>
       <div class="phone-month">2026.<span>04</span></div>
